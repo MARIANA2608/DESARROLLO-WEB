@@ -1,0 +1,95 @@
+/* Tipografía y base */
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* HERO con degradado + animación suave */
+.hero {
+  background: linear-gradient(120deg, #0b3d2e, #0f766e);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto decorativo */
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  right: -180px;
+  top: -200px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(14px); }
+  100% { transform: translateY(0); }
+}
+
+/* Card de información en collapse */
+.glass {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* PERSONALIZACIÓN Bootstrap: botón primario */
+.btn-primary {
+  background-color: #ff5733;
+  border-color: #ff5733;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Cards con hover (transiciones + transform) */
+.card-hover {
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+}
+
+/* Sección alterna */
+.section-alt {
+  background: #f6f7fb;
+}
+
+/* Form animación sutil */
+.form-anim {
+  transition: transform 0.25s ease;
+}
+
+.form-anim:hover {
+  transform: translateY(-2px);
+}
+
+/* Links footer */
+.footer-link {
+  text-decoration: none;
+  color: #444;
+  transition: color 0.2s ease;
+}
+.footer-link:hover {
+  color: #ff5733;
+}
+
+/* Media query propia (pantallas pequeñas) */
+@media (max-width: 576px) {
+  .hero {
+    background: linear-gradient(120deg, #111827, #0f766e);
+  }
+  h1 {
+    font-size: 1.9rem;
+  }
+}
