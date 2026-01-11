@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Galería Interactiva</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Galería Interactiva con JavaScript</h1>
+    <p>Pega una URL directa de imagen (.jpg o .png)</p>
+
+    <input type="url" id="urlImagen" placeholder="https://ejemplo.com/imagen.jpg">
+    <br><br>
+
+    <button onclick="agregarImagen()">Agregar Imagen</button>
+    <button onclick="eliminarImagen()">Eliminar Imagen Seleccionada</button>
+
+    <h2>Imágenes agregadas</h2>
+
+    <!-- ESPACIO VISIBLE DE LA GALERÍA -->
+    <div id="galeria">
+        <p class="mensaje">Aquí aparecerán las imágenes</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
