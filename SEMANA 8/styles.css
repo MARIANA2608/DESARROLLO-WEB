@@ -1,0 +1,18 @@
+/* Estilo personalizado para diferenciar el proyecto */
+body {
+    background-color: #f4f6f9;
+}
+
+h2 {
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+footer {
+    font-size: 0.9rem;
+}
+
+/* Formulario con toque personal */
+form {
+    border-radius: 10px;
+}
