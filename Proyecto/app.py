@@ -65,7 +65,7 @@ def producto_editar(id):
         flash('Producto actualizado exitosamente', 'success')
         return redirect(url_for('productos_listar'))
     
-    return render_template('../productos/producto_editar.html', form=form, producto=producto)
+    return render_template('producto_form.html', form=form, producto=producto)
 
 # ruta para eliminar producto
 @app.route('/productos/eliminar/<int:id>', methods=['POST'])
@@ -83,33 +83,3 @@ def producto_eliminar(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-@app.route('/item/<codigo>')
-def item(codigo):
-    return f"""
-    <h2>Consulta de Producto</h2>
-    <p>Código del producto: {codigo}</p>
-    <p>Estado: Disponible en inventario.</p>
-    <a href="/">Volver al inicio</a>
-    """
-
-# Ruta dinámica para categoría
-@app.route('/categoria/<nombre>')
-def categoria(nombre):
-    return f"""
-    <h2>Categoría seleccionada</h2>
-    <p>Mostrando productos de la categoría: {nombre}</p>
-    <a href="/">Volver al inicio</a>
-    """
-
-# Ruta dinámica que solo acepta números
-@app.route('/stock/<int:cantidad>')
-def stock(cantidad):
-    return f"""
-    <h2>Consulta de Stock</h2>
-    <p>Productos con al menos {cantidad} unidades disponibles.</p>
-    <a href="/">Volver al inicio</a>
-    """
-
-if __name__ == '__main__':
-    app.run()

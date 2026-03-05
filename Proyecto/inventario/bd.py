@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import Error
 from pathlib import Path
 
-db_path = Path(__file__).parent /"data" / 'inventario.db'
+db_path = Path(__file__).parent /"data" / 'invent.db'
 
 def get_db_connection():
     db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -19,7 +19,8 @@ def init_db():
                 nombre TEXT NOT NULL,
                 descripcion TEXT NOT NULL,
                 cantidad INTEGER NOT NULL,
-                precio REAL NOT NULL
+                precio REAL NOT NULL,
+                precio2 REAL NULL
             )   
         ''')
         conn.commit()

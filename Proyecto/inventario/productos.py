@@ -20,4 +20,8 @@ class Producto:
             'cantidad': self.cantidad,
             'precio': self.precio
         }
-    
+
+    # list 
+    def to_list(self):
+        return [self.id, self.nombre, self.descripcion, self.cantidad, self.precio]
+        

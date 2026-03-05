@@ -1,6 +1,7 @@
-# clase enventario
+# clase Inventario
 from .productos import Producto
 from .bd import init_db, get_db_connection
+from decimal import Decimal
 
 class Inventario:
     def __init__(self):
@@ -42,21 +43,43 @@ class Inventario:
             self.nombres.add(nombre)
 
         # actualizar el producto en la base de datos
-    def actualizar_producto(self, id, nombre, descripcion, cantidad, precio):
-        if id in self.productos:
-            with get_db_connection() as conn:
-                conn.execute('UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ?, precio = ? WHERE id = ?', 
-                            (nombre, descripcion, cantidad, precio, id))
-                conn.commit()
-                producto = self.productos[id]
-                self.nombres.discard(producto.nombre)
-                producto.nombre = nombre
-                producto.descripcion = descripcion
-                producto.cantidad = cantidad
-                producto.precio = precio
-                self.nombres.add(nombre)
-                conn.commit()
 
+    def actualizar_producto(self, id, nombre, descripcion, cantidad, precio):
+        # Asegurar id int (por si llega como string)
+        id = int(id)
+
+        if id not in self.productos:
+            return False
+
+        # Normalizar tipos
+        cantidad = int(cantidad)
+        if precio is None:
+            precio = 0.0
+        elif isinstance(precio, Decimal):
+            precio = float(precio)
+        else:
+            precio = float(precio)
+
+        # Actualizar BD
+        with get_db_connection() as conn:
+            conn.execute(
+                'UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ?, precio = ? WHERE id = ?',
+                (nombre, descripcion, cantidad, precio, id)
+            )
+            conn.commit()
+
+        # Actualizar cache en memoria
+        producto = self.productos[id]
+        self.nombres.discard(producto.nombre)
+
+        producto.nombre = nombre
+        producto.descripcion = descripcion
+        producto.cantidad = cantidad
+        producto.precio = precio
+
+        self.nombres.add(nombre)
+        return True
+    
     # eliminar producto
     def eliminar_producto(self, id):
         if id in self.productos:

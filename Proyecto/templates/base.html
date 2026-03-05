@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title%} Mi proyecto {%endblock%}</title>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <header>
@@ -14,7 +15,7 @@
             <li><a href="{{url_for('inicio')}}">Inicio</a></li>
             <li><a href="{{url_for('about')}}">Acerca de</a></li>
             <li><a href="{{url_for('contact')}}">Contacto</a></li>
-            <li><a href="{{url_for('producto_nuevo')}}"> Nuevo Producto</a></li>
+            <li><a href="{{url_for('productos_listar')}}"> Productos</a></li>
         </ul>
     </nav>
 </header>
