@@ -3,10 +3,21 @@ from form import ProductoForm
 from inventario.bd import init_db, get_db_connection
 from inventario.inventario import Inventario
 from inventario.productos import Producto
-
+from flask_sqlalchemy import SQLAlchemy
+from inventario.inventario_persistencia import guardar_csv, leer_csv, guardar_json, leer_json,  guardar_txt, leer_txt
+from inventario.models import db, ProductoORM
+from conexion.conexion import get_connection
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mi_clave_secreta'
-init_db()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///invent.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#db = SQLAlchemy(app)
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
 inventario = Inventario()
 inventario.cargar_desde_db()
 
@@ -74,12 +85,56 @@ def producto_eliminar(id):
     flash('Producto eliminado exitosamente', 'success')
     return redirect(url_for('productos_listar'))
 
+# ruta para los datos persistentes
+@app.route('/datos', methods=['GET', 'POST'])
+def datos():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
+        cantidad = request.form.get('cantidad', '0').strip()
+        precio = request.form.get('precio', '0').strip()
 
+        dic = {
+            'nombre': nombre,
+            'descripcion': descripcion,
+            'cantidad': cantidad,
+            'precio': precio
+        }
 
+        guardar_txt(f"{nombre}, {descripcion}, {cantidad}, {precio}")
+        guardar_json(dic)
+        guardar_csv(dic)   
+
+        flash('Datos guardados exitosamente', 'success')
+        return redirect(url_for('datos'))
+
+    datos_txt = leer_txt()
+    datos_json = leer_json()
+    datos_csv = leer_csv()
+    return render_template('datos.html', datos_txt=datos_txt, datos_json=datos_json, datos_csv=datos_csv)
+# ruta de conexion a mysql
+@app.route('/db_test')
+def db_test():
+    try:
+        conn = get_connection()
+
+        if conn is None:
+            flash('No se pudo conectar a la base de datos', 'danger')
+            
+        cursor = conn.cursor()
+        cursor.execute('SELECT * from usuario')
+        result = cursor.fetchall()
+        cursor.close()
+        flash(f'Conexión exitosa. Usuarios: {result}', 'success')
+        conn.close()
+        return str(result)
+    except Exception as e:
+        flash(f'Error al conectar a la base de datos: {e}', 'danger')
+        return f'Error: {e}'
     
 
-
-
+            
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
