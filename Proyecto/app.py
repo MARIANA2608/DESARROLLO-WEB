@@ -7,6 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from inventario.inventario_persistencia import guardar_csv, leer_csv, guardar_json, leer_json,  guardar_txt, leer_txt
 from inventario.models import db, ProductoORM
 from conexion.conexion import get_connection
+from services.producto_service import *
+from forms.producto_form import ProductoForm
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mi_clave_secreta'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///invent.db'
@@ -37,7 +40,8 @@ def contact():
 def about():
     return render_template("about.html")
 
-# ruta de productos
+"""
+# ruta de productos sqlite
 @app.route('/productos/nuevo', methods=['GET', 'POST'])
 def producto_nuevo():
     form = ProductoForm()
@@ -51,14 +55,14 @@ def producto_nuevo():
         return redirect(url_for('productos_listar'))
     return render_template('producto_form.html', form=form)
 
-# ruta para listar productos
+# ruta para listar productos con SQLITE
 @app.route('/productos')
 def productos_listar():
     inventario.cargar_desde_db()  # Asegurarse de cargar los productos más recientes
     productos = list(inventario.productos.values())
     return render_template('productos.html', productos=productos)
 
-# ruta para editar producto
+# ruta para editar producto con SQLITE
 @app.route('/productos/editar/<int:id>', methods=['GET', 'POST'])
 def producto_editar(id):
     producto = inventario.productos.get(id)
@@ -78,12 +82,69 @@ def producto_editar(id):
     
     return render_template('producto_form.html', form=form, producto=producto)
 
-# ruta para eliminar producto
+# ruta para eliminar producto con SQLITE
 @app.route('/productos/eliminar/<int:id>', methods=['POST'])
 def producto_eliminar(id):
     inventario.eliminar_producto(id)
     flash('Producto eliminado exitosamente', 'success')
     return redirect(url_for('productos_listar'))
+"""
+#  PARA REALIZAR EL CRUD CON MYSQL 
+@app.route('/productos')
+def productos_listar():
+
+    productos = listar_productos()
+
+    return render_template(
+        'productos/listar.html',
+        productos=productos
+    )
+
+
+@app.route('/productos/nuevo', methods=['GET','POST'])
+def producto_nuevo():
+    form = ProductoForm()
+
+    if form.validate_on_submit():
+        insertar_producto(
+            form.nombre.data,
+            form.descripcion.data,
+            form.precio.data,
+            form.stock.data
+        )
+        flash("Producto guardado")
+        return redirect(url_for('productos_listar'))
+
+    return render_template('productos/formulario.html', form=form)
+
+
+@app.route('/productos/eliminar/<int:id>')
+def producto_eliminar(id):
+    eliminar_producto(id)
+    flash("Producto eliminado")
+    return redirect(url_for('productos_listar'))
+
+# ruta de productos 
+@app.route('/productos/editar/<int:id>', methods=['GET','POST'])
+def producto_editar(id):
+
+    producto = obtener_producto_por_id(id)
+    form = ProductoForm(data=producto)
+
+    if form.validate_on_submit():
+        actualizar_producto(
+            id,
+            form.nombre.data,
+            form.descripcion.data,
+            form.precio.data,
+            form.stock.data
+        )
+        flash("Producto actualizado")
+        return redirect(url_for('productos_listar'))
+
+    return render_template('productos/formulario.html', form=form, producto=producto)
+
+
 
 # ruta para los datos persistentes
 @app.route('/datos', methods=['GET', 'POST'])
@@ -112,6 +173,7 @@ def datos():
     datos_json = leer_json()
     datos_csv = leer_csv()
     return render_template('datos.html', datos_txt=datos_txt, datos_json=datos_json, datos_csv=datos_csv)
+
 # ruta de conexion a mysql
 @app.route('/db_test')
 def db_test():
@@ -131,9 +193,6 @@ def db_test():
     except Exception as e:
         flash(f'Error al conectar a la base de datos: {e}', 'danger')
         return f'Error: {e}'
-    
-
-            
     
 
 if __name__ == '__main__':
