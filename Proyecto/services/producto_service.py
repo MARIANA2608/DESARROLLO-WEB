@@ -4,7 +4,7 @@ def listar_productos():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM producto")
+    cursor.execute("SELECT * FROM producto ")
 
     productos = cursor.fetchall()
 

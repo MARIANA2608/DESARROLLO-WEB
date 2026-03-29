@@ -10,12 +10,28 @@ from conexion.conexion import get_connection
 from services.producto_service import *
 from forms.producto_form import ProductoForm
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mi_clave_secreta'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///invent.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#db = SQLAlchemy(app)
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
+from forms.login_form import LoginForm
+from forms.registro_form import RegistroForm
+from services.usuario_service import *
+
+from fpdf import FPDF
+from flask import make_response
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'mi_clave_secretaa'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Debes iniciar sesión para acceder a esta página'
+login_manager.login_message_category = 'warning'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///invent.db'
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#db = SQLAlchemy(app)
+"""
 db.init_app(app)
 
 with app.app_context():
@@ -23,8 +39,97 @@ with app.app_context():
 
 inventario = Inventario()
 inventario.cargar_desde_db()
+"""
+@login_manager.user_loader
+def load_user(user_id):
+    return obtener_usuario_por_id(user_id)
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    form = RegistroForm()
+
+    if form.validate_on_submit():
+        nombre = form.nombre.data
+        email = form.email.data
+        password = form.password.data
+
+        usuario_existente = obtener_usuario_por_email(email)
+        if usuario_existente:
+            flash('Ya existe un usuario con ese correo', 'danger')
+            return redirect(url_for('registro'))
+
+        password_hash = generate_password_hash(password)
+
+        registrar_usuario(nombre, email, password_hash)
+
+        flash('Usuario registrado correctamente', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('auth/registro.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        usuario = obtener_usuario_por_email(email)
+
+        if usuario and check_password_hash(usuario.password, password):
+            login_user(usuario)
+            flash('Inicio de sesión exitoso', 'success')
+            return redirect(url_for('inicio'))
+        else:
+            flash('Correo o contraseña incorrectos', 'danger')
+
+    return render_template('auth/login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Sesión cerrada correctamente', 'info')
+    return redirect(url_for('login'))
+
+# ruta de exportar PDF 
+@app.route('/exportar/pdf')
+@login_required
+def exportar_pdf():
+    productos = listar_productos()
+
+    pdf = FPDF()
+    pdf.add_page()
+
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "Reporte de Productos ", ln=True, align="C")
+
+    pdf.ln(10)
+
+    pdf.set_font("Arial", "B", 10)
+    pdf.cell(20, 10, "ID", 1)
+    pdf.cell(60, 10, "Nombre", 1)
+    pdf.cell(30, 10, "Precio", 1)
+    pdf.cell(30, 10, "Stock", 1)
+    pdf.ln()
+
+    pdf.set_font("Arial", "", 10)
+
+    for p in productos:
+        pdf.cell(20, 10, str(p['id_producto']), 1)
+        pdf.cell(60, 10, p['nombre'], 1)
+        pdf.cell(30, 10, f"${p['precio']}", 1)
+        pdf.cell(30, 10, str(p['stock']), 1)
+        pdf.ln()
+
+    response = make_response(pdf.output(dest='S').encode('latin-1'))
+    response.headers.set('Content-Disposition', 'attachment', filename='productos.pdf')
+    response.headers.set('Content-Type', 'application/pdf')
+
+    return response
 
 @app.route('/')
+
 def inicio():
     return render_template("index.html")
 
@@ -91,6 +196,7 @@ def producto_eliminar(id):
 """
 #  PARA REALIZAR EL CRUD CON MYSQL 
 @app.route('/productos')
+@login_required
 def productos_listar():
 
     productos = listar_productos()

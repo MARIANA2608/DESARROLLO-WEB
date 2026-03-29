@@ -6,7 +6,9 @@
 
     <!-- TÍTULO + BOTÓN -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">📦 Gestión de Productos</h3>
+        <h3 class="mb-0">Gestión de Productos</h3>
+
+        <a href="{{ url_for('exportar_pdf') }}" class="btn btn-danger"> PDF</a>
 
         <a href="{{ url_for('producto_nuevo') }}" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Nuevo producto
@@ -53,7 +55,7 @@
                                 <!-- EDITAR -->
                                 <a class="btn btn-sm btn-outline-warning me-1"
                                    href="{{ url_for('producto_editar', id=p.id_producto) }}">
-                                    <i class="bi bi-pencil"></i>
+                                   <i class="bi bi-pen"></i>
                                 </a>
 
                                 <!-- ELIMINAR -->
@@ -64,7 +66,7 @@
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger"
                                             onclick="return confirm('¿Seguro que deseas eliminar este producto?')">
-                                        <i class="bi bi-trash"></i>
+                                        ELIMINAR
                                     </button>
 
                                 </form>
