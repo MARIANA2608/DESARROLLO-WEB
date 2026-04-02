@@ -1,87 +1,53 @@
 {% extends "base.html" %}
+{% block title %}Productos{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid mt-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Listado de Productos</h3>
 
-    <!-- TÍTULO + BOTÓN -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Gestión de Productos</h3>
-
-        <a href="{{ url_for('exportar_pdf') }}" class="btn btn-danger"> PDF</a>
-
-        <a href="{{ url_for('producto_nuevo') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Nuevo producto
-        </a>
+    <div>
+        <a href="{{ url_for('exportar_pdf') }}" class="btn btn-danger">PDF</a>
+        <a href="{{ url_for('producto_nuevo') }}" class="btn btn-primary">Nuevo</a>
     </div>
-
-    <!-- CARD -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-
-            <!-- TABLA -->
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle">
-
-                    <thead class="table-dark text-center">
-                        <tr>
-                            <th style="width: 80px;">ID</th>
-                            <th>Nombre</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
-                            <th style="width: 200px;">Acciones</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for p in productos %}
-                        <tr>
-                            <td class="text-center">{{ p.id_producto }}</td>
-
-                            <td>{{ p.nombre }}</td>
-
-                            <td class="text-end">
-                                ${{ "%.2f"|format(p.precio) }}
-                            </td>
-
-                            <td class="text-center">
-                                <span class="badge bg-secondary">
-                                    {{ p.stock }}
-                                </span>
-                            </td>
-
-                            <td class="text-center">
-
-                                <!-- EDITAR -->
-                                <a class="btn btn-sm btn-outline-warning me-1"
-                                   href="{{ url_for('producto_editar', id=p.id_producto) }}">
-                                   <i class="bi bi-pen"></i>
-                                </a>
-
-                                <!-- ELIMINAR -->
-                                <form action="{{ url_for('producto_eliminar', id=p.id_producto) }}"
-                                      method="POST"
-                                      style="display:inline;">
-
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('¿Seguro que deseas eliminar este producto?')">
-                                        ELIMINAR
-                                    </button>
-
-                                </form>
-
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-    </div>
-
 </div>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark text-center">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for p in productos %}
+        <tr>
+            <td class="text-center">{{ p.id_producto }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.descripcion }}</td>
+            <td>${{ "%.2f"|format(p.precio) }}</td>
+            <td class="text-center">{{ p.stock }}</td>
+
+            <td class="text-center">
+                <a href="{{ url_for('producto_editar', id=p.id_producto) }}" class="btn btn-warning btn-sm">
+                    Editar
+                </a>
+
+                <form action="{{ url_for('producto_eliminar', id=p.id_producto) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('¿Deseas eliminar este producto?')">
+                        Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

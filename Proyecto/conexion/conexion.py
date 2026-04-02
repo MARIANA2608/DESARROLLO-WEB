@@ -1,17 +1,15 @@
-# conexion a mysql
 import mysql.connector
 from mysql.connector import Error
+
 def get_connection():
     try:
-        connection = mysql.connector.connect(
-            host='localhost',
-            database='Sistema_factura',
-            user='root',
-            password='root'
+        conn = mysql.connector.connect(
+            host="127.0.0.1",
+            user="root",
+            password="54321",
+            database="restaurante_db"
         )
-        if connection.is_connected():
-            return connection
+        return conn
     except Error as e:
-        print(f"Error al conectar a MySQL: {e}")
+        print("Error al conectar a MariaDB:", e)
         return None
-    

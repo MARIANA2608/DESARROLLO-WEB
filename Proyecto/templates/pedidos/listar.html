@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">🧾 Pedidos / Facturación</h3>
+
+    <a href="{{ url_for('pedido_nuevo') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Nuevo Pedido
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th style="width: 180px;">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for p in pedidos %}
+                    <tr>
+                        <td class="text-center">{{ p.id_pedido }}</td>
+                        <td class="fw-bold">{{ p.nombres }}</td>
+                        <td class="text-center">{{ p.fecha }}</td>
+                        <td class="text-end">${{ "%.2f"|format(p.total) }}</td>
+
+                        <td class="text-center">
+                            <a href="{{ url_for('pedido_detalle', id=p.id_pedido) }}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+
+                            <form action="{{ url_for('pedido_eliminar', id=p.id_pedido) }}" method="POST" style="display:inline;">
+                                <button class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('¿Seguro que deseas eliminar este pedido?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% if pedidos|length == 0 %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No hay pedidos registrados.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
