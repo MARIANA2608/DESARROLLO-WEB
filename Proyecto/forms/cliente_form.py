@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length
 
+
 class ClienteForm(FlaskForm):
     nombres = StringField("Nombres", validators=[DataRequired(), Length(min=3, max=120)])
     cedula = StringField("Cédula", validators=[DataRequired(), Length(min=10, max=15)])

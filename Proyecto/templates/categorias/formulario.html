@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Categorías{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+            <h3 class="fw-bold text-center">{{ titulo }}</h3>
+            <hr>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.nombre_categoria.label(class="form-label fw-bold") }}
+                    {{ form.nombre_categoria(class="form-control") }}
+                </div>
+
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-success") }}
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('categorias_listar') }}" class="btn btn-secondary">⬅ Volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

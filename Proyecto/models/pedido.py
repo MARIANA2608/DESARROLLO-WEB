@@ -1,5 +1,5 @@
 class Pedido:
-    def __init__(self, id_pedido=None, id_cliente=None, fecha=None, total=0):
+    def __init__(self, id_pedido, id_cliente, fecha, total):
         self.id_pedido = id_pedido
         self.id_cliente = id_cliente
         self.fecha = fecha

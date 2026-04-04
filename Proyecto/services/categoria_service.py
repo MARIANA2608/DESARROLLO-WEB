@@ -1,43 +1,70 @@
 from conexion.conexion import get_connection
 
+
 def listar_categorias():
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM categorias")
-    data = cursor.fetchall()
+    conexion = get_connection()
+    cursor = conexion.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM categorias ORDER BY id_categoria DESC")
+    categorias = cursor.fetchall()
+
     cursor.close()
-    conn.close()
-    return data
+    conexion.close()
+    return categorias
+
 
 def insertar_categoria(nombre_categoria):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO categorias(nombre_categoria) VALUES (%s)", (nombre_categoria,))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    conexion = get_connection()
+    cursor = conexion.cursor()
 
-def obtener_categoria_por_id(id):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM categorias WHERE id_categoria=%s", (id,))
-    data = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return data
+    sql = "INSERT INTO categorias (nombre_categoria) VALUES (%s)"
+    cursor.execute(sql, (nombre_categoria,))
+    conexion.commit()
 
-def actualizar_categoria(id, nombre_categoria):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE categorias SET nombre_categoria=%s WHERE id_categoria=%s", (nombre_categoria, id))
-    conn.commit()
     cursor.close()
-    conn.close()
+    conexion.close()
 
-def eliminar_categoria(id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM categorias WHERE id_categoria=%s", (id,))
-    conn.commit()
+
+def obtener_categoria_por_id(id_categoria):
+    conexion = get_connection()
+    cursor = conexion.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM categorias WHERE id_categoria = %s", (id_categoria,))
+    categoria = cursor.fetchone()
+
     cursor.close()
-    conn.close()
+    conexion.close()
+    return categoria
+
+
+def actualizar_categoria(id_categoria, nombre_categoria):
+    conexion = get_connection()
+    cursor = conexion.cursor()
+
+    sql = "UPDATE categorias SET nombre_categoria = %s WHERE id_categoria = %s"
+    cursor.execute(sql, (nombre_categoria, id_categoria))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+
+def eliminar_categoria(id_categoria):
+    conexion = get_connection()
+    cursor = conexion.cursor()
+
+    # Verificar si hay productos asociados a la categoría
+    cursor.execute("SELECT COUNT(*) AS total FROM productos WHERE id_categoria = %s", (id_categoria,))
+    resultado = cursor.fetchone()
+
+    if resultado[0] > 0:
+        cursor.close()
+        conexion.close()
+        return False  # No se puede eliminar
+
+    cursor.execute("DELETE FROM categorias WHERE id_categoria = %s", (id_categoria,))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+    return True
